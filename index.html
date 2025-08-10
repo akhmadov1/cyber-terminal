@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Akhmadov Ali | Cyber Terminal</title>
+  <meta name="description" content="Akhmadov Ali — Cybersecurity yo'lida. Red‑0 → Red‑1, pentest va Blue Team yo'nalishi. Portfolio, reja, kontaktlar.">
+  <style>
+    .test-ribbon{
+      position:fixed; top:20px; right:-40px; z-index:10000;
+      transform: rotate(45deg);
+      background:#00ff66; color:#001b0e; text-decoration:none;
+      font-weight:800; letter-spacing:.08em;
+      padding:12px 80px; border:1px solid #083b23;
+      box-shadow:0 6px 20px rgba(0,255,100,.25);
+      font-size:14px;
+    }
+    .test-ribbon:hover{ background:#24ffa6 }
+    
+    .toast{
+      position:fixed; right:16px; bottom:16px; z-index:10001;
+      background:#0b1; color:#001b0e; font-weight:700;
+      padding:10px 14px; border-radius:10px; border:1px solid #083b23;
+      box-shadow:0 10px 30px rgba(0,255,100,.15);
+      opacity:0; transform:translateY(8px); transition:.25s ease;
+      pointer-events:none;
+    }
+    .toast.on{ opacity:1; transform:none }
+
+
+
+    :root{
+      --bg:#000; --fg:#eaffea; --fg-dim:#c9ffdb; --green:#00ff66; --accent:#24ffa6;
+      --card:#0a0a0a; --border:#083b23; --muted:#b8ffd8;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;
+      line-height:1.55; overflow-x:hidden;
+    }
+    a{color:inherit}
+    /* Matrix background */
+    #matrix{position:fixed; inset:0; z-index:-3}
+    .wm{position:fixed; inset:auto 0 6% 0; text-align:center; z-index:-2;
+      opacity:.05; font-size:min(22vw,180px); letter-spacing:.06em; user-select:none; pointer-events:none}
+
+    /* Top bar */
+    .nav{position:sticky; top:0; z-index:10; backdrop-filter: blur(6px);
+      background:rgba(0,0,0,.55); border-bottom:1px solid var(--border);}
+    .wrap{max-width:1100px; margin:0 auto; padding:0 16px}
+    .nav .wrap{display:flex; align-items:center; justify-content:space-between}
+    .brand{display:flex; align-items:center; gap:10px; padding:10px 0; color:var(--green); font-weight:700; font-size:15px}
+    .led{width:10px; height:10px; border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green)}
+    .menu{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+    .menu a, .lang-btn{
+      color:var(--fg); text-decoration:none; padding:8px 10px; border-radius:8px; border:1px solid transparent; font-size:14px
+    }
+    .menu a:hover, .lang-btn:hover{border-color:var(--border); color:var(--green)}
+    .lang{position:relative}
+    .lang-btn{cursor:pointer; background:transparent}
+    .lang-list{position:absolute; right:0; top:38px; background:#050; border:1px solid var(--border); border-radius:8px; overflow:hidden; display:none}
+    .lang-list button{display:block; width:100%; background:transparent; color:var(--fg); border:0; padding:8px 12px; cursor:pointer; text-align:left}
+    .lang-list button:hover{background:rgba(0,255,102,.1)}
+    .lang.open .lang-list{display:block}
+
+    /* Hero / terminal */
+    .hero{min-height:68vh; display:grid; place-items:center; padding:48px 16px 24px; text-align:center}
+    .terminal{
+      width:min(920px,100%); background:var(--card); border:1px solid var(--border);
+      border-radius:14px; box-shadow:0 0 0 1px #02170e inset, 0 10px 40px rgba(0,255,100,.06);
+      text-align:left; overflow:hidden;
+    }
+    .term-top{display:flex; align-items:center; gap:8px; padding:10px 12px; border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg,#0b0b0b,#050505)}
+    .dot{width:12px; height:12px; border-radius:50%}
+    .r{background:#ff5f56}.y{background:#ffbd2e}.g{background:#27c93f}
+    .screen{padding:18px; font-size:15px; color:var(--muted)}
+    .line{display:block; margin:6px 0}
+    .cmd{color:var(--green)}
+    .cursor{display:inline-block; width:10px; height:1.1em; background:var(--green); margin-left:6px; vertical-align:-2px; animation:blink 1s steps(1) infinite}
+    @keyframes blink{50%{opacity:0}}
+    .cta{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+    .btn{background:transparent; color:var(--green); border:1px solid var(--green); padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600}
+    .btn:hover{background:rgba(0,255,102,.08)}
+    .btn.solid{background:var(--green); color:#001b0e; border-color:var(--green)}
+
+    /* Sections */
+    section{scroll-margin-top:80px}
+    h2{margin:0 0 14px; color:var(--green); font-size:clamp(20px,2vw,24px)}
+    .grid{display:grid; gap:16px}
+    .twocol{grid-template-columns:repeat(2,1fr)}
+    .threecol{grid-template-columns:repeat(3,1fr)}
+    @media (max-width:980px){.threecol{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:680px){.twocol,.threecol{grid-template-columns:1fr}}
+    .card{
+      background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px;
+      box-shadow:0 0 0 1px #02170e inset, 0 10px 40px rgba(0,255,100,.05)
+    }
+    .muted{color:var(--fg-dim)}
+    .tag{display:inline-block; border:1px solid var(--border); padding:6px 10px; border-radius:999px; margin:4px 6px 0 0; font-size:13px}
+
+    /* Projects gallery + modal */
+    .gallery{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+    @media (max-width:940px){.gallery{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:560px){.gallery{grid-template-columns:1fr}}
+    .shot{position:relative; border:1px solid var(--border); border-radius:12px; overflow:hidden; aspect-ratio:16/10; background:#060606; cursor:zoom-in}
+    .shot img{width:100%; height:100%; object-fit:cover; display:block}
+    .shot .cap{position:absolute; left:0; right:0; bottom:0; padding:10px 12px;
+      background:linear-gradient(180deg,transparent,rgba(0,0,0,.72)); font-size:13px; color:var(--fg)}
+
+    .modal{position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:20}
+    .modal.open{display:flex}
+    .modal img{max-width:92vw; max-height:88vh; border:1px solid var(--border); border-radius:12px}
+
+    /* Contacts */
+    .contacts{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+    @media (max-width:560px){.contacts{grid-template-columns:1fr}}
+    .contact{padding:14px; border:1px dashed var(--border); border-radius:12px; display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg)}
+    .contact:hover{border-color:#0b5}
+    .ico{width:clamp(20px,2.2vw,26px); height:auto; flex:0 0 auto}
+
+    .copy-row{display:flex; align-items:center; gap:10px; margin-top:10px}
+    .copy-btn{border:1px solid var(--green); color:var(--green); background:transparent; padding:8px 10px; border-radius:8px; cursor:pointer}
+    .copy-btn:hover{background:rgba(0,255,102,.08)}
+
+    footer{opacity:.75; text-align:center; padding:36px 0 48px; font-size:13px}
+
+    /* reveal on scroll */
+    [data-reveal]{opacity:0; transform: translateY(12px); transition:.6s ease}
+    [data-reveal].on{opacity:1; transform:none}
+
+
+    /* Fake Terminal */
+.fake-term {
+  background:#050505;
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 0 0 1px #02170e inset, 0 10px 40px rgba(0,255,100,.05);
+  font-size:14px;
+  color:var(--fg);
+  overflow:hidden;
+}
+.fake-term__screen {
+  padding:14px;
+  min-height:220px;
+  max-height:400px;
+  overflow:auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;
+  line-height:1.5;
+}
+.fake-term__screen .line {
+  margin:2px 0;
+  white-space:pre-wrap;
+}
+.fake-term__prompt {
+  display:flex;
+  gap:8px;
+  align-items:center;
+  border-top:1px solid var(--border);
+  padding:10px 12px;
+  background:linear-gradient(180deg,#0b0b0b,#070707);
+}
+.fake-term .pfx {
+  color:var(--green);
+}
+#ftInput {
+  flex:1;
+  background:transparent;
+  border:0;
+  outline:none;
+  color:var(--fg);
+  font:inherit;
+  padding:6px 0;
+}
+#ftInput::placeholder {
+  color:#89ffbf80;
+}
+
+/* --- BG music UI --- */
+#soundToggle{
+  position:fixed; right:14px; bottom:14px; z-index:50;
+  background:rgba(0,0,0,.55); color:#00ff66; border:1px solid #083b23;
+  border-radius:10px; padding:10px 12px; cursor:pointer;
+  box-shadow:0 0 0 1px #02170e inset, 0 10px 30px rgba(0,255,100,.08);
+  backdrop-filter: blur(4px); font-size:16px;
+}
+#soundToggle:hover{ background:rgba(0,0,0,.75) }
+
+#soundHint{
+  position:fixed; left:50%; transform:translateX(-50%);
+  bottom:68px; z-index:49; color:#eaffea; background:rgba(0,0,0,.65);
+  border:1px solid #083b23; border-radius:999px; padding:6px 12px;
+  font-size:13px; opacity:0; pointer-events:none; transition:.4s ease;
+}
+#soundHint.on{ opacity:1 }
+
+/* Contact form (cyber) */
+.cyber-form{max-width:720px;margin:auto;display:grid;gap:14px}
+.cf-row{display:grid;gap:8px}
+.cf-row span{font-size:13px;color:var(--fg-dim)}
+.cyber-form input,.cyber-form textarea{
+  width:100%; background:#050505; color:var(--fg);
+  border:1px solid var(--border); border-radius:12px;
+  padding:12px 14px; font:inherit; outline:none;
+  box-shadow:0 0 0 1px #02170e inset;
+}
+.cyber-form input::placeholder,.cyber-form textarea::placeholder{color:#9af9c780}
+.cyber-form input:focus,.cyber-form textarea:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 1px var(--green) inset, 0 0 0 3px rgba(0,255,102,.12);
+}
+.cf-send{width:100%; padding:12px 16px; border-radius:12px; letter-spacing:.08em; font-weight:800}
+.cf-send:hover{filter:saturate(1.2)}
+.cf-terminal{
+  background:#000; color:#0f0; font-family:monospace;
+  padding:10px; margin-top:12px; min-height:70px;
+  border-radius:8px; border:1px solid var(--green);
+  white-space:pre-wrap; overflow:auto; font-size:13px;
+}
+  </style>
+</head>
+<body>
+<!-- Background music (put the file at: assets/audio/bg.mp3) -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="assets/audio/bg.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Floating sound toggle -->
+<button id="soundToggle" aria-label="Toggle sound">🔊</button>
+<div id="soundHint">Tap to enable sound</div>
+
+
+  <!-- Matrix background + watermark -->
+  <canvas id="matrix" aria-hidden="true"></canvas>
+  <div class="wm">LINUX • KALI • CLI</div>
+
+  <!-- Modal (lightbox) -->
+  <div id="lightbox" class="modal" onclick="this.classList.remove('open')">
+    <img id="lightbox-img" alt="preview">
+  </div>
+
+  <nav class="nav">
+    <div class="wrap">
+      <div class="brand"><span class="led"></span> Akhmadov Ali • Cyber Terminal</div>
+      <div class="menu">
+        <a data-i="menu_about" href="#about">About</a>
+        <a data-i="menu_projects" href="#projects">Projects</a>
+        <a data-i="menu_learning" href="#learning">Learning</a>
+        <a data-i="menu_red0" href="#red0">Red‑0</a>
+        <a data-i="menu_plans" href="#plans">Plans</a>
+        <a data-i="menu_motivation" href="#motivation">Motivation</a>
+        <a data-i="menu_contact" href="#contact">Contact</a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn">🌐 UZ</button>
+          <div class="lang-list" id="langList">
+            <button data-lang="uz">🇺🇿 O‘zbek (Lotin)</button>
+            <button data-lang="ru">🇷🇺 Русский</button>
+            <button data-lang="en">🇬🇧 English</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="terminal" data-reveal>
+      <div class="term-top">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div style="margin-left:8px;color:#9ee;">/bin/bash — akhmadov@terminal</div>
+      </div>
+      <div class="screen" id="screen">
+        <span class="line">$ <span class="cmd">sudo access --grant</span><span class="cursor"></span></span>
+        <span class="line" id="l2"></span>
+        <span class="line" id="l3"></span>
+        <div class="cta" id="cta" style="display:none">
+          <a class="btn solid" href="#projects" data-i="cta_projects">Ko‘rish: Projects</a>
+          <a class="btn" href="#contact" data-i="cta_contact">Contact</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- ABOUT -->
+    <section id="about" class="grid twocol">
+      <div class="card" data-reveal>
+        <h2 data-i="about_title">Akhmadov Ali • Cybersecurity</h2>
+        <p class="muted" data-i="about_p1">
+          Men — Ali. Cybersecurity yo‘lida 3–4 oy faol o‘rganayotgan enthusiastman.
+          Linux/Kali muhitida tarmoqlar, web xavfsizlik va pentest asoslarini amalda sinayapman.
+          Maqsad: Pentester bo‘lish,Red va Blue Teamlard’da ham tajriba orttirish.
+        </p>
+        <div class="tag">Linux</div><div class="tag">Kali</div><div class="tag">Pentest</div>
+        <div class="tag">Blue Team</div><div class="tag">Python</div>
+      </div>
+      <div class="card" data-reveal>
+        <h2 data-i="bio_title">Qisqacha Bio</h2>
+        <p class="muted" data-i="bio_p1">Yashayman (South Korea) — Cybersecurity talaba. Intizom: har kuni kichik amaliyot, har hafta mini‑loyiha.</p>
+        <p class="muted" data-i="bio_p2">Falsafa: “Hack to protect. Knowledge is power.”</p>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="card" style="margin-top:16px" data-reveal>
+      <h2 data-i="projects_title">Projects • Qilingan ishlar</h2>
+      <p class="muted" data-i="projects_p">Skrinshotlarni keyin qo‘shamiz. Hozircha placeholder.</p>
+      <div class="gallery" id="gallery">
+        <!-- Placeholder rasmlar (data URL SVG) -->
+        <figure class="shot">
+          <img alt="Evil Twin lab" src="data:image/svg+xml;utf8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='800' height='500'><rect width='100%' height='100%' fill='%23060606'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2300ff66' font-family='monospace' font-size='28'>Placeholder 1</text></svg>">
+          <figcaption class="cap" data-i="cap1">Evil Twin lab — captive portal & handshake sinovi.</figcaption>
+        </figure>
+        <figure class="shot">
+          <img alt="Web Audit" src="data:image/svg+xml;utf8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='800' height='500'><rect width='100%' height='100%' fill='%23060606'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2300ff66' font-family='monospace' font-size='28'>Placeholder 2</text></svg>">
+          <figcaption class="cap" data-i="cap2">Web audit: XSS/SQLi test flow, Burp Suite.</figcaption>
+        </figure>
+        <figure class="shot">
+          <img alt="OSINT" src="data:image/svg+xml;utf8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='800' height='500'><rect width='100%' height='100%' fill='%23060606'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2300ff66' font-family='monospace' font-size='28'>Placeholder 3</text></svg>">
+          <figcaption class="cap" data-i="cap3">OSINT topilmalar — metadata & dorking.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- LEARNING -->
+    <section id="learning" class="grid twocol" style="margin-top:16px">
+      <div class="card" data-reveal>
+        <h2 data-i="learning_title">Current Learning</h2>
+        <ul class="muted" id="learn_list">
+          <li data-i="learn1">OSCP yo‘nalishi — BOF asoslari</li>
+          <li data-i="learn2">Python for Pentesting — requests, scapy, automation</li>
+          <li data-i="learn3">Nmap & Wireshark — tarmoq tahlili</li>
+        </ul>
+      </div>
+      <div class="card" data-reveal>
+        <h2 data-i="stack_title">Stack</h2>
+        <p class="muted" data-i="stack_p">Kali Linux, Burp Suite, Aircrack‑ng, Metasploit, Wireshark, Nmap, Git/GitHub.</p>
+      </div>
+    </section>
+
+    <!-- RED-0 MODULES -->
+    <section id="red0" class="card" style="margin-top:16px" data-reveal>
+      <h2>Red‑0 • <span data-i="red0_title">Bo‘limlar</span></h2>
+      <div class="grid threecol">
+        <div class="card">
+          <strong>1.</strong> <span data-i="r0_1">Course Overview & Instruction</span><br>
+          <strong>2.</strong> <span data-i="r0_2">Instruction to Linux Basics</span><br>
+          <strong>3.</strong> <span data-i="r0_3">Advanced Linux Basics</span><br>
+        </div>
+        <div class="card">
+          <strong>4.</strong> <span data-i="r0_4">Windows Fundamentals I</span><br>
+          <strong>5.</strong> <span data-i="r0_5">Windows Fundamentals II</span><br>
+          <strong>6.</strong> <span data-i="r0_6">Networking Essentials</span><br>
+        </div>
+        <div class="card">
+          <strong>7.</strong> <span data-i="r0_7">Bash Scripting Instruction</span><br>
+          <strong>8.</strong> <span data-i="r0_8">Beginner Python Scripting</span><br>
+          <strong>9.</strong> <span data-i="r0_9">PowerShell Scripting Instruction</span><br>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLANS -->
+    <section id="plans" class="card" style="margin-top:16px" data-reveal>
+      <h2 data-i="plans_title">Kelgusidagi rejalar</h2>
+      <ul class="muted">
+        <li data-i="plan1">Red‑0ni tugatish</li>
+        <li data-i="plan2">Red‑1 — to‘liq “vzlom” mashinalar ustida ishlash (CTF/lablar)</li>
+      </ul>
+    </section>
+
+    <!-- MOTIVATION -->
+    <section id="motivation" class="grid twocol" style="margin-top:16px">
+      <div class="card" data-reveal>
+        <h2 data-i="mot_title">Motivation</h2>
+        <p class="muted" data-i="mot1">“Bugun bitgan lab — ertaga yangi darvoza.”</p>
+        <p class="muted" data-i="mot2">“Tinimsiz amaliyot — haqiqiy skill.”</p>
+        <p class="muted" data-i="mot3">“Hujumni bil, himoyani mustahkamla.”</p>
+      </div>
+      <div class="card" data-reveal>
+        <h2>Quick Links</h2>
+        <div>
+          <a class="tag" href="#projects">Projects</a>
+          <a class="tag" href="#red0">Red‑0</a>
+          <a class="tag" href="#plans">Plans</a>
+          <a class="tag" href="#contact">Contact</a>
+        </div>
+      </div>
+    </section>
+
+<!-- FAKE TERMINAL -->
+<section id="playground" class="card" style="margin-top:16px" data-reveal>
+  <h2>Interactive Terminal (Demo)</h2>
+  <div class="fake-term" id="fakeTerm" aria-label="interactive terminal">
+    <div class="fake-term__screen" id="ftScreen"></div>
+    <div class="fake-term__prompt">
+      <span class="pfx">$</span>
+      <input id="ftInput" type="text" autocomplete="off" placeholder="type 'help' and press Enter…" />
+    </div>
+  </div>
+  <p class="muted" style="margin-top:8px">
+    Try: <code>help</code>, <code>ls</code>, <code>matrix on</code>, <code>matrix off</code>, <code>speed 2</code>, 
+    <code>tux</code>, <code>ascii</code>, <code>open projects</code>, <code>clear</code>.
+  </p>
+</section>
+
+
+    <!-- CONTACT -->
+    <section id="contact" class="card" style="margin-top:16px" data-reveal>
+      <h2 data-i="contact_title">Contact</h2>
+      <div class="contacts">
+        <!-- EMAIL (ikonka + link + copy) -->
+        <div class="card">
+          <a class="contact" href="mailto:ali.akhmadov.701@gmail.com" title="Email">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/>
+              <path d="m22 8-10 6L2 8"/>
+            </svg>
+            <span>Email: <span id="emailText">ali.akhmadov.701@gmail.com</span></span>
+          </a>
+          <div class="copy-row">
+            <button class="copy-btn" id="copyEmail" data-i="copy_btn">Copy email</button>
+            <span id="copyMsg" class="muted"></span>
+          </div>
+        </div>
+
+        <!-- Telegram -->
+        <a class="contact" href="https://t.me/https://t.me/akhmadov_01" target="_blank" rel="noopener" title="Telegram">
+          <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M9.6 15.2 9.4 19c.4 0 .6-.2.8-.4l1.9-1.8 3.9 2.8c.7.4 1.2.2 1.4-.6l2.6-12.3c.2-.9-.3-1.3-1.1-1L3.6 9.6c-.9.3-.9.8-.2 1l4.7 1.5 10.9-6.8-9.4 9.9Z"/></svg>
+          <span>Telegram</span>
+        </a>
+
+        <!-- GitHub -->
+        <a class="contact" href="https://github.com/akhmadov1" target="_blank" rel="noopener" title="GitHub">
+          <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.1 1.7 1.1 1 .1.7 1.9 2.9 1.4.1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.4-2.3 1.1-3.3-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6.2 0c2.4-1.5 3.4-1.2 3.4-1.2.6 1.7.2 3 .1 3.3.7 1 .9 2 .9 3.3 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+          <span>GitHub</span>
+        </a>
+
+        <!-- LinkedIn -->
+        <a class="contact" href="https://www.linkedin.com/in/https://www.linkedin.com/in/ali-akhmadov-32920736b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" target="_blank" rel="noopener" title="LinkedIn">
+          <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0zM8 8h4.8v2.2h.1C13.7 8.9 15.5 8 17.9 8 23.4 8 24 11.6 24 16.2V24h-5v-6.9c0-1.7 0-3.9-2.4-3.9-2.4 0-2.8 1.8-2.8 3.8V24H8z"/></svg>
+          <span>LinkedIn</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SEND MESSAGE (Formspree) -->
+<section id="send-message" class="card" style="margin-top:16px" data-reveal>
+  <h2>Send Message</h2>
+
+  <form id="msgForm" class="cyber-form" action="https://formspree.io/f/xgvzrnan" method="POST">
+    <label class="cf-row">
+      <span>Your Name</span>
+      <input type="text" name="name" placeholder="Your Name" required>
+    </label>
+
+    <label class="cf-row">
+      <span>Email</span>
+      <input type="email" name="email" placeholder="Email" required>
+    </label>
+
+    <label class="cf-row">
+      <span>Your Message</span>
+      <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+    </label>
+
+    <!-- Formspree spam-honi (hidden) -->
+    <input type="text" name="_gotcha" style="display:none">
+
+    <!-- Formspree redirect o‘rniga biz JS bilan ko‘rsatamiz -->
+    <button type="submit" class="btn solid cf-send">SEND</button>
+
+    <!-- Terminal-style natija / progress -->
+    <pre id="cfTerminal" class="cf-terminal"></pre>
+  </form>
+</section>
+
+    <footer>© <span id="yr"></span> Akhmadov Ali • Built with Linux/Kali spirit 🐧</footer>
+  </main>
+
+  <script>
+    /* ====== Matrix rain ====== */
+    (function(){
+      const c = document.getElementById('matrix'), x = c.getContext('2d');
+      function size(){ c.width=innerWidth; c.height=innerHeight } size(); addEventListener('resize', size);
+      const chars='アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const f=16; let cols=Math.floor(c.width/f); let drops=new Array(cols).fill(1);
+      (function draw(){
+        x.fillStyle='rgba(0,0,0,.08)'; x.fillRect(0,0,c.width,c.height);
+        x.fillStyle='#00ff66'; x.font=f+'px monospace';
+        for(let i=0;i<drops.length;i++){
+          const t = chars[Math.floor(Math.random()*chars.length)];
+          x.fillText(t, i*f, drops[i]*f);
+          if(drops[i]*f>c.height && Math.random()>0.975) drops[i]=0;
+          drops[i]++;
+        }
+        requestAnimationFrame(draw);
+      })();
+    })();
+
+    /* ====== Reveal on scroll ====== */
+    const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target);} }),{threshold:.12});
+    document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el));
+    document.getElementById('yr').textContent = new Date().getFullYear();
+
+    /* ====== Lightbox (modal image) ====== */
+    document.querySelectorAll('.shot img').forEach(img=>{
+      img.addEventListener('click', ()=>{
+        const m = document.getElementById('lightbox');
+        const mi = document.getElementById('lightbox-img');
+        mi.src = img.src; m.classList.add('open');
+      });
+    });
+
+    /* ====== Beep (WebAudio) ====== */
+    function beep(freq=920, ms=120, vol=0.02){
+      const ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type='square'; o.frequency.value=freq; g.gain.value=vol;
+      o.connect(g); g.connect(ctx.destination); o.start();
+      setTimeout(()=>{o.stop(); ctx.close();}, ms);
+    }
+
+    /* ====== Copy email ====== */
+    const emailText = document.getElementById('emailText');
+    const copyBtn = document.getElementById('copyEmail');
+    const copyMsg = document.getElementById('copyMsg');
+    copyBtn.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(emailText.textContent.trim());
+        copyMsg.textContent = i18n[curLang].copied;
+        beep();
+        setTimeout(()=> copyMsg.textContent='', 1500);
+      }catch(e){
+        copyMsg.textContent = i18n[curLang].copyFail;
+        setTimeout(()=> copyMsg.textContent='', 1500);
+      }
+    });
+
+    /* ====== Terminal typing intro + beep ====== */
+    (function(){
+      const l2 = document.getElementById('l2');
+      const l3 = document.getElementById('l3');
+      const cta = document.getElementById('cta');
+      const steps = [
+        {el:l2, text:'[OK] Access granted. Welcome, Ali.', delay:600},
+        {el:l3, text:'Loading portfolio… █████      55%', delay:500},
+      ];
+      let i=0;
+      function type(el, text, cb){
+        let j=0; el.textContent = '$ ' ;
+        const cmd = document.createElement('span'); cmd.className='cmd'; el.appendChild(cmd);
+        const cur = document.createElement('span'); cur.className='cursor'; el.appendChild(cur);
+        const timer = setInterval(()=>{
+          cmd.textContent = text.slice(0, j++);
+          if(j%3===0) beep();
+          if(j>text.length){ clearInterval(timer); cur.remove(); cb&&cb(); }
+        }, 18);
+      }
+      function next(){
+        if(i<steps.length){
+          setTimeout(()=> type(steps[i].el, steps[i].text, ()=>{ i++; next(); if(i===steps.length){ cta.style.display='flex'; }}), steps[i].delay);
+        }
+      }
+      next();
+    })();
+
+    /* ====== Language switch (UZ/RU/EN) ====== */
+    const i18n = {
+      uz:{
+        menu_about:'About', menu_projects:'Projects', menu_learning:'Learning', menu_red0:'Red‑0',
+        menu_plans:'Plans', menu_motivation:'Motivation', menu_contact:'Contact',
+        cta_projects:'Ko‘rish: Projects', cta_contact:'Contact',
+        about_title:'Akhmadov Ali • Cybersecurity',
+        about_p1:'Men — Ali. Cybersecurity yo‘lida 3–4 oy faol o‘rganayotgan enthusiastman. Linux/Kali muhitida tarmoqlar, web xavfsizlik va pentest asoslarini amalda sinayapman. Maqsad: Pentester bo‘lish va Blue Team’da ham tajriba orttirish.',
+        bio_title:'Qisqacha Bio',
+        bio_p1:'Daegu University (Korea) — Cybersecurity talaba. Intizom: har kuni kichik amaliyot, har hafta mini‑loyiha.',
+        bio_p2:'📚: “Hack to protect. Knowledge is power.”',
+        projects_title:'Projects • Qilingan ishlar',
+        projects_p:'Skrinshotlarni keyin qo‘shamiz. Hozircha placeholder.',
+        cap1:'Evil Twin lab — captive portal & handshake sinovi.',
+        cap2:'Web audit: XSS/SQLi test flow, Burp Suite.',
+        cap3:'OSINT topilmalar — metadata & dorking.',
+        learning_title:'Current Learning',
+        learn1:'OSCP yo‘nalishi — BOF asoslari',
+        learn2:'Python for Pentesting — requests, scapy, automation',
+        learn3:'Nmap & Wireshark — tarmoq tahlili',
+        stack_title:'Stack',
+        stack_p:'Kali Linux, Burp Suite, Aircrack‑ng, Metasploit, Wireshark, Nmap, Git/GitHub.',
+        red0_title:'Bo‘limlar',
+        r0_1:'Course Overview & Instruction',
+        r0_2:'Instruction to Linux Basics',
+        r0_3:'Advanced Linux Basics',
+        r0_4:'Windows Fundamentals I',
+        r0_5:'Windows Fundamentals II',
+        r0_6:'Networking Essentials',
+        r0_7:'Bash Scripting Instruction',
+        r0_8:'Beginner Python Scripting',
+        r0_9:'PowerShell Scripting Instruction',
+        plans_title:'Kelgusidagi rejalar',
+        plan1:'Red‑0ni tugatish',
+        plan2:'Red‑1 — to‘liq “vzlom” mashinalar ustida ishlash (CTF/lablar)',
+        mot_title:'Motivation',
+        mot1:'“Bugun bitgan lab — ertaga yangi darvoza.”',
+        mot2:'“Tinimsiz amaliyot — haqiqiy skill.”',
+        mot3:'“Hujumni bil, himoyani mustahkamla.”',
+        contact_title:'Contact',
+        copy_btn:'Copy email',
+        copied:'Nusxa olindi!',
+        copyFail:'Nusxa olinmadi'
+      },
+      ru:{
+        menu_about:'Обо мне', menu_projects:'Проекты', menu_learning:'Обучение', menu_red0:'Red‑0',
+        menu_plans:'Планы', menu_motivation:'Мотивация', menu_contact:'Контакты',
+        cta_projects:'Смотреть: Проекты', cta_contact:'Контакты',
+        about_title:'Akhmadov Ali • Кибербезопасность',
+        about_p1:'Я — Али. 3–4 месяца осваиваю кибербезопасность. Практикую Linux/Kali, сети, веб‑безопасность и основы пентеста. Цель — стать пентестером и набраться опыта в Blue Team.',
+        bio_title:'Кратко',
+        bio_p1:'Daegu University (Корея) — студент кибербеза. Дисциплина: ежедневная практика, еженедельные мини‑проекты.',
+        bio_p2:'Мотто: «Взламывай, чтобы защищать. Знание — сила».',
+        projects_title:'Проекты • Сделанное',
+        projects_p:'Скриншоты добавим позже. Пока заглушки.',
+        cap1:'Evil Twin lab — captive‑портал и handshake.',
+        cap2:'Веб‑аудит: XSS/SQLi, Burp Suite.',
+        cap3:'OSINT: метаданные и dorking.',
+        learning_title:'Сейчас изучаю',
+        learn1:'OSCP трек — основы BOF',
+        learn2:'Python для пентеста — requests, scapy, автоматизация',
+        learn3:'Nmap & Wireshark — анализ сетей',
+        stack_title:'Стек',
+        stack_p:'Kali Linux, Burp Suite, Aircrack‑ng, Metasploit, Wireshark, Nmap, Git/GitHub.',
+        red0_title:'Модули',
+        r0_1:'Course Overview & Instruction',
+        r0_2:'Instruction to Linux Basics',
+        r0_3:'Advanced Linux Basics',
+        r0_4:'Windows Fundamentals I',
+        r0_5:'Windows Fundamentals II',
+        r0_6:'Networking Essentials',
+        r0_7:'Bash Scripting Instruction',
+        r0_8:'Beginner Python Scripting',
+        r0_9:'PowerShell Scripting Instruction',
+        plans_title:'Планы',
+        plan1:'Завершить Red‑0',
+        plan2:'Red‑1 — работа с CTF/лабораторными «взлом‑машинами»',
+        mot_title:'Мотивация',
+        mot1:'«Лаб сегодня — дверь завтра».',
+        mot2:'«Непрерывная практика — реальный скилл».',
+        mot3:'«Знай атаку — укрепляй защиту».',
+        contact_title:'Контакты',
+        copy_btn:'Скопировать email',
+        copied:'Скопировано!',
+        copyFail:'Не удалось скопировать'
+      },
+      en:{
+        menu_about:'About', menu_projects:'Projects', menu_learning:'Learning', menu_red0:'Red‑0',
+        menu_plans:'Plans', menu_motivation:'Motivation', menu_contact:'Contact',
+        cta_projects:'View: Projects', cta_contact:'Contact',
+        about_title:'Akhmadov Ali • Cybersecurity',
+        about_p1:'I’m Ali — 3–4 months into cybersecurity. Practicing Linux/Kali, networking, web security and pentest basics. Goal: become a Pentester and gain Blue‑Team experience.',
+        bio_title:'Short Bio',
+        bio_p1:'Daegu University (Korea) — Cybersecurity student. Discipline: daily practice, weekly mini‑projects.',
+        bio_p2:'Motto: “Hack to protect. Knowledge is power.”',
+        projects_title:'Projects • Work',
+        projects_p:'Screenshots coming soon. Placeholders for now.',
+        cap1:'Evil Twin lab — captive portal & handshake.',
+        cap2:'Web audit: XSS/SQLi flow, Burp Suite.',
+        cap3:'OSINT finds — metadata & dorking.',
+        learning_title:'Current Learning',
+        learn1:'OSCP track — BOF fundamentals',
+        learn2:'Python for Pentesting — requests, scapy, automation',
+        learn3:'Nmap & Wireshark — network analysis',
+        stack_title:'Stack',
+        stack_p:'Kali Linux, Burp Suite, Aircrack‑ng, Metasploit, Wireshark, Nmap, Git/GitHub.',
+        red0_title:'Modules',
+        r0_1:'Course Overview & Instruction',
+        r0_2:'Instruction to Linux Basics',
+        r0_3:'Advanced Linux Basics',
+        r0_4:'Windows Fundamentals I',
+        r0_5:'Windows Fundamentals II',
+        r0_6:'Networking Essentials',
+        r0_7:'Bash Scripting Instruction',
+        r0_8:'Beginner Python Scripting',
+        r0_9:'PowerShell Scripting Instruction',
+        plans_title:'Future Plans',
+        plan1:'Finish Red‑0',
+        plan2:'Red‑1 — full “pwn” practice on CTF/lab machines',
+        mot_title:'Motivation',
+        mot1:'“Today’s finished lab opens tomorrow’s door.”',
+        mot2:'“Relentless practice becomes real skill.”',
+        mot3:'“Know the attack, harden the defense.”',
+        contact_title:'Contact',
+        copy_btn:'Copy email',
+        copied:'Copied!',
+        copyFail:'Copy failed'
+      }
+    };
+    let curLang = 'uz';
+    const langBtn = document.getElementById('langBtn');
+    const langList = document.getElementById('langList');
+    langBtn.addEventListener('click', ()=> langList.parentElement.classList.toggle('open'));
+    langList.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{ setLang(b.dataset.lang); langList.parentElement.classList.remove('open'); });
+    });
+    function setLang(l){
+      curLang = l;
+      langBtn.textContent = (l==='uz'?'🌐 UZ':l==='ru'?'🌐 RU':'🌐 EN');
+      const map = i18n[l];
+      document.querySelectorAll('[data-i]').forEach(el=>{
+        const k = el.getAttribute('data-i'); if(map[k]) el.textContent = map[k];
+      });
+    }
+    setLang('uz');
+
+    /* ====== Fake Terminal Logic ====== */
+(function(){
+  const screen = document.getElementById('ftScreen');
+  const input  = document.getElementById('ftInput');
+  if(!screen || !input) return;
+
+  const matrixCanvas = document.getElementById('matrix');
+  let matrixBrightness = 1;
+
+  function applyMatrixFilter(){
+    matrixCanvas.style.filter = `brightness(${matrixBrightness})`;
+  }
+  applyMatrixFilter();
+
+  const history = [];
+  let hIndex = -1;
+
+  function println(txt='', cls=''){
+    const div = document.createElement('div');
+    div.className = 'line ' + cls;
+    div.textContent = txt;
+    screen.appendChild(div);
+    screen.scrollTop = screen.scrollHeight;
+  }
+
+  const ASCII_TUX = String.raw`
+      .--.
+     |o_o |   Tux
+     |:_/ |   Linux penguin
+    //   \ \  
+   (|     | )
+  /'\_   _/` + `'\
+  \___)=(___/
+  `.trim();
+
+  const ASCII_MATRIX = String.raw`
+  [:::: MATRIX DEMO ::::]
+  01001101 01000001 01010100 01010010 01001001 01011000
+  `.trim();
+
+  const commands = {
+    help(){
+      println("Available commands:");
+      println("help, ls, open <section>, clear, tux, ascii, matrix on/off, speed <1..5>, theme dark/light, echo <text>");
+    },
+    ls(){ println("about/  projects/  learning/  red0/  plans/  motivation/  contact/"); },
+    open(arg){
+      const id = (arg||'').toLowerCase();
+      const ids = ['about','projects','learning','red0','plans','motivation','contact'];
+      if(ids.includes(id)){
+        document.querySelector('#'+id)?.scrollIntoView({behavior:'smooth'});
+        println(`opening: #${id}`);
+      } else {
+        println("usage: open <about|projects|learning|red0|plans|motivation|contact>");
+      }
+    },
+    clear(){ screen.innerHTML=''; },
+    tux(){ println(ASCII_TUX); },
+    ascii(){ println(ASCII_MATRIX); },
+    matrix(arg){
+      if(arg==='on'){ matrixBrightness = 1; matrixCanvas.style.opacity='1'; println('matrix: on'); }
+      else if(arg==='off'){ matrixBrightness = .2; matrixCanvas.style.opacity='.2'; println('matrix: off'); }
+      else { println("usage: matrix on|off"); return; }
+      applyMatrixFilter();
+    },
+    speed(n){
+      const v = Number(n);
+      if(!v || v<1 || v>5){ println("usage: speed <1..5>"); return; }
+      matrixBrightness = 0.6 + (v-1)*0.1;
+      matrixCanvas.style.opacity = String(0.3 + v*0.14);
+      applyMatrixFilter(); println(`speed: ${v}`);
+    },
+    theme(arg){
+      if(arg==='light'){
+        document.body.style.background='#f5fff7';
+        document.body.style.color='#062b16';
+        matrixCanvas.style.opacity='0.08';
+        println('theme: light'); 
+      }else if(arg==='dark'){
+        document.body.style.background='var(--bg)';
+        document.body.style.color='var(--fg)';
+        matrixCanvas.style.opacity='1';
+        println('theme: dark');
+      }else{ println('usage: theme <dark|light>'); }
+    },
+    echo(...rest){ println(rest.join(' ')); }
+  };
+
+  println("Fake Terminal — type 'help' to begin.");
+
+  input.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){
+      const raw = input.value.trim();
+      if(!raw) return;
+      println(`$ ${raw}`);
+      history.unshift(raw); hIndex = -1;
+      input.value='';
+
+      const parts = raw.split(/\s+/);
+      const cmd = parts[0].toLowerCase();
+      const args = parts.slice(1);
+
+      if(commands[cmd]){
+        commands[cmd](...args);
+      } else {
+        println(`command not found: ${cmd}`);
+      }
+    }
+  });
+})();
+
+/* ====== Background music (autostart on first interaction) ====== */
+(function(){
+  const audio = document.getElementById('bgMusic');
+  const btn   = document.getElementById('soundToggle');
+  const hint  = document.getElementById('soundHint');
+  if(!audio || !btn) return;
+
+  // foydalanuvchi tanlovini eslab qolish
+  const KEY = 'bgmusic_enabled';
+  let enabled = localStorage.getItem(KEY) !== 'false'; // default: true
+  let faded = null;
+
+  function setIcon(){
+    btn.textContent = audio.muted || audio.paused ? '🔈' : '🔊';
+  }
+  function fade(to=0.35, ms=500){
+    if(faded) cancelAnimationFrame(faded);
+    const from = audio.volume;
+    const t0 = performance.now();
+    (function step(t){
+      const k = Math.min(1, (t - t0)/ms);
+      audio.volume = from + (to - from)*k;
+      if(k<1) faded = requestAnimationFrame(step);
+    })(t0);
+  }
+   //musicsetting
+  async function startPlayback(){
+    try{
+      audio.volume = 0.0;
+      await audio.play();
+      fade(0.35, 600);
+      setIcon();
+      hint.classList.remove('on');
+      localStorage.setItem(KEY, 'true');
+    }catch(e){
+      // agar bloklansa, hint ko'rsatamiz
+      hint.classList.add('on');
+    }
+  }
+
+  // Birinchi interactionda avtomatik yoqish (tap/scroll/keypress)
+  function armAutoplay(){
+    const once = async ()=>{
+      if(!enabled) return;
+      await startPlayback();
+      window.removeEventListener('pointerdown', once);
+      window.removeEventListener('keydown', once);
+      window.removeEventListener('scroll', once, {passive:true});
+    };
+    window.addEventListener('pointerdown', once, {once:true});
+    window.addEventListener('keydown', once, {once:true});
+    window.addEventListener('scroll', once, {once:true, passive:true});
+  }
+
+  // Tugma orqali mute/unmute
+  btn.addEventListener('click', async ()=>{
+    if(audio.paused){
+      enabled = true;
+      await startPlayback();
+    }else{
+      // mute with fade out
+      fade(0.0, 300);
+      setTimeout(()=>{ audio.pause(); setIcon(); }, 320);
+      enabled = false;
+      localStorage.setItem(KEY, 'false');
+      hint.classList.remove('on');
+    }
+  });
+
+  // Tab qaytganda musiqa davom etsin (iOS/Instagram ichida ham)
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState==='visible' && enabled){
+      // qaytganda ovoz asta qaytariladi
+      startPlayback();
+    }
+  });
+
+  // iOS/Instagram uchun: audio elementini “issiq” holatga keltirish
+  audio.load();
+  setIcon();
+  if(enabled) armAutoplay();
+  else { hint.classList.add('on'); setTimeout(()=>hint.classList.remove('on'), 2500); }
+})();
+
+
+//music settings
+  document.addEventListener("DOMContentLoaded", function() {
+    const audio = document.getElementById("bgMusic");
+    audio.volume = 0; // nol ovozdan boshlaymiz
+  
+    function fadeInAudio(targetVolume = 0.35, duration = 2000) {
+      const step = targetVolume / (duration / 50); // har 50ms
+      const fadeInterval = setInterval(() => {
+        if (audio.volume < targetVolume) {
+          audio.volume = Math.min(audio.volume + step, targetVolume);
+        } else {
+          clearInterval(fadeInterval);
+        }
+      }, 50);
+    }
+  
+    audio.play().then(() => {
+      fadeInAudio(); // 2 sekund ichida yumshoq ovoz kiradi
+    }).catch(() => {
+      // Autoplay bloklansa — scroll/clickda yoqamiz
+      const startOnAction = () => {
+        audio.play();
+        fadeInAudio();
+        window.removeEventListener("scroll", startOnAction);
+        window.removeEventListener("click", startOnAction);
+      };
+      window.addEventListener("scroll", startOnAction);
+      window.addEventListener("click", startOnAction);
+    });
+  });
+
+  /* ===== Send Message via Formspree (with terminal progress) ===== */
+
+  
+(function(){
+  const form = document.getElementById('msgForm');
+  const term = document.getElementById('cfTerminal');
+  if(!form || !term) return;
+
+  const endpoint = form.getAttribute('action'); // https://formspree.io/f/XXXXXXXX
+
+  function twrite(lines, delay=300){
+    term.textContent = "";
+    let i=0; (function step(){
+      if(i<lines.length){ term.textContent += lines[i++] + "\n"; setTimeout(step, delay); }
+    })();
+  }
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+
+    const fd = new FormData(form);
+    // Oddiy tekshiruv
+    if(!(fd.get('name')||'').trim() || !(fd.get('email')||'').trim() || !(fd.get('message')||'').trim()){
+      twrite(["[ERROR] Missing fields. Please fill in all inputs."], 0);
+      return;
+    }
+
+    // Progress anim
+    twrite([
+      "[INIT] Establishing secure channel...",
+      "[OK] Channel established.",
+      "[PACK] Encrypting payload...",
+      "[OK] AES‑256 applied.",
+      "[UPLOAD] Transmitting █░░░░░░░░░░ 10%",
+      "[UPLOAD] Transmitting ████░░░░░░░ 40%",
+      "[UPLOAD] Transmitting ███████░░░░ 70%"
+    ], 250);
+
+    try{
+      const res = await fetch(endpoint, {
+        method:'POST',
+        headers:{ 'Accept': 'application/json' },
+        body: fd
+      });
+
+      if(res.ok){
+        form.reset();
+        twrite([
+          "[UPLOAD] Transmitting ████████████ 100%",
+          "[OK] Message delivered. Thank you!"
+        ], 250);
+        if(typeof beep==='function') beep(1200,100,0.02);
+      }else{
+        twrite(["[ERROR] Transmission failed. Try again later."], 0);
+      }
+    }catch(_){
+      twrite(["[ERROR] Network failure. Please try again."], 0);
+    }
+  });
+})();
+  
+  </script>
+
+  <!-- TEST MODE ribbon -->
+<a class="test-ribbon" id="testRibbon" href="#" title="Copy link">TEST MODE</a>
+
+<!-- Mini toast -->
+<div class="toast" id="toast">Link copied</div>
+
+
+<script>
+  (function(){
+    const btn = document.getElementById('testRibbon');
+    const toast = document.getElementById('toast');
+    if(!btn || !toast) return;
+  
+    btn.addEventListener('click', async (e)=>{
+      e.preventDefault();
+      const url = window.location.href;
+      try{
+        await navigator.clipboard.writeText(url);
+        toast.textContent = 'Link copied: ' + url;
+        toast.classList.add('on');
+        setTimeout(()=> toast.classList.remove('on'), 1500);
+        if(typeof beep==='function') beep(1100,100,0.02);
+      }catch(_){
+        toast.textContent = 'Copy failed';
+        toast.classList.add('on');
+        setTimeout(()=> toast.classList.remove('on'), 1500);
+      }
+    });
+  })();
+  </script>
+
+</body>
+</html>
